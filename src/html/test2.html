@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Homestay</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      color: #444;
+    }
+
+    .form-container,
+    .homestay-container {
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .homestay-container {
+      text-align: center;
+    }
+
+    .homestay-list {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .homestay-item {
+      background: #fefefe;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      width: calc(33.333% - 20px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .homestay-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .homestay-item h3 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .homestay-item p {
+      margin-bottom: 8px;
+      color: #666;
+    }
+
+    .homestay-item button {
+      padding: 10px 15px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .homestay-item button:hover {
+      background: #0056b3;
+    }
+
+    .homestay-item button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Đặt Phòng Homestay</h1>
+
+    <!-- Form thông tin khách hàng -->
+    <div class="form-container">
+      <h2>Thông Tin Khách Hàng</h2>
+      <form id="customerForm">
+        <div class="form-group">
+          <label for="customerName">Họ và Tên</label>
+          <input type="text" id="customerName" placeholder="Nhập họ và tên" required>
+        </div>
+        <div class="form-group">
+          <label for="customerPhone">Số Điện Thoại</label>
+          <input type="tel" id="customerPhone" placeholder="Nhập số điện thoại" required>
+        </div>
+        <div class="form-group">
+          <label for="customerEmail">Email</label>
+          <input type="email" id="customerEmail" placeholder="Nhập email">
+        </div>
+        <div class="form-group">
+          <label for="bookingDate">Ngày Nhận Phòng</label>
+          <input type="date" id="bookingDate" required>
+        </div>
+        <div class="form-group">
+          <label for="bookingDate">Ngày Trả phòng</label>
+          <input type="date" id="bookingDate" required>
+        </div>
+      </form>
+    </div>
+
+    <!-- Danh sách homestay -->
+    <div class="homestay-container">
+      <h2>Danh Sách Homestay</h2>
+      <div class="homestay-list">
+        <!-- Mỗi homestay -->
+        <div class="homestay-item">
+          <img src="https://via.placeholder.com/150" alt="Homestay 1">
+          <h3>Homestay Biển Xanh</h3>
+          <p>Giá: 2,000,000 VNĐ / đêm</p>
+          <p>Trạng thái: Còn phòng</p>
+          <button>Chọn</button>
+        </div>
+        <div class="homestay-item">
+          <img src="https://via.placeholder.com/150" alt="Homestay 2">
+          <h3>Homestay Núi Rừng</h3>
+          <p>Giá: 1,500,000 VNĐ / đêm</p>
+          <p>Trạng thái: Còn phòng</p>
+          <button>Chọn</button>
+        </div>
+        <div class="homestay-item">
+          <img src="https://via.placeholder.com/150" alt="Homestay 3">
+          <h3>Homestay Trung Tâm</h3>
+          <p>Giá: 1,200,000 VNĐ / đêm</p>
+          <p>Trạng thái: Hết phòng</p>
+          <button disabled>Hết phòng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+const handleCheckAvailableRooms = async () => {
+  // Cuộn tới phần danh sách phòng
+  const target = document.getElementById('rooms-section');
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  try {
+    // Lấy danh sách homestay
+    const homestayResponse = await axios.get('http://localhost:3000/homestay');
+    const allHomestays = homestayResponse.data;
+
+    // Nếu người dùng chưa chọn ngày, hiển thị tất cả homestay
+    if (!checkInDate || !checkOutDate) {
+      setRoomsAvailable(allHomestays);
+      setShowRooms(true); // Hiển thị phòng
+      return;
+    }
+
+    // Lấy danh sách đặt phòng (dat_homestay)
+    const bookingResponse = await axios.get('http://localhost:3000/dat_homestay');
+    const bookings = bookingResponse.data;
+
+    // Lọc các homestay dựa trên ngày đã chọn
+    const availableHomestays = allHomestays.filter((homestay) => {
+      // Kiểm tra xem homestay có bị đặt trùng ngày không
+      const isOverlapping = bookings.some((booking) => {
+        return (
+          booking.id_homestay === homestay.id_homestay &&
+          !(new Date(checkOutDate) <= new Date(booking.ngay_dat) || 
+            new Date(checkInDate) >= new Date(booking.ngay_tra))
+        );
+      });
+      // Chỉ giữ các homestay không trùng ngày
+      return !isOverlapping;
+    });
+
+    // Cập nhật danh sách homestay khả dụng
+    setRoomsAvailable(availableHomestays);
+    setShowRooms(true); // Hiển thị phòng
+  } catch (error) {
+    console.error('Lỗi khi kiểm tra phòng:', error);
+  }
+};
